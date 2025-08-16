@@ -39,7 +39,7 @@ const MapView = () => {
     const fetchRoutes = async () => {
       const newRoutes = [];
       for (let d of dropboxesData) {
-        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${foodbankPosition[1]},${foodbankPosition[0]};${d.longitude},${d.latitude}?geometries=geojson&access_token=${MAPBOX_TOKEN}`;
+        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${foodbankPosition[1]},${foodbankPosition[0]};${d.longitude},${d.latitude}?geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`;
         try {
           const res = await fetch(url);
           const data = await res.json();
