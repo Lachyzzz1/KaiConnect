@@ -1,17 +1,20 @@
 [
   {
-    "name": "Dropbox 1",
-    "latitude": -45.85530631585909,
-    "longitude": 170.51095719903955
+    "name": "All Saints Anglican Church",
+    "latitude": -45.862206067265106,
+    "longitude": 170.51395711535082,
+    "priority": 1
   },
   {
-    "name": "Dropbox 2",
-    "latitude": -45.866513699421,
-    "longitude": 170.50713773367713
+    "name": "Mercy Hospital",
+    "latitude": -45.86109279907998,
+    "longitude": 170.4995649136946,
+    "priority": 2
   },
   {
-    "name": "Dropbox 3",
-    "latitude": -45.90012979681401,
-    "longitude": 170.5095117233747
+    "name": "St Kilda Methodists Church",
+    "latitude": -45.90060763902705,
+    "longitude": 170.50959755405887,
+    "priority": 3
   }
 ]

@@ -5,6 +5,7 @@ import L from "leaflet";
 
 import foodbankIconImg from "./assets/foodbank.png";
 import dropboxIconImg from "./assets/dropbox.png";
+import userIconImg from "./assets/user.png";
 
 import foodbankData from "./foodbank.json";
 import dropboxesData from "./dropboxes.json";
@@ -24,6 +25,20 @@ const dropboxIcon = L.icon({
   popupAnchor: [0, -28],
 });
 
+const userIcon = L.icon({
+  iconUrl: userIconImg,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const priorityColors = {
+  1: "#00FFFF", // low
+  2: "#FFD700", // medium
+  3: "#FF0000"  // high
+};
+
+
 const MAPBOX_TOKEN = "pk.eyJ1IjoibWNpbGE3NzQiLCJhIjoiY21lZGxlcGd5MDgwODJqbXNxbzJ3MmZwaiJ9.RLjL-6U0jlIEdcOZhrv5pg";
 
 const MapView = () => {
@@ -33,6 +48,19 @@ const MapView = () => {
       : [-45.874, 170.503]; // fallback
 
   const [routes, setRoutes] = useState([]);
+  const [userPosition, setUserPosition] = useState(null);
+  const [userRoute, setUserRoute] = useState([]);
+
+  // --- GET USER LOCATION ---
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => setUserPosition([position.coords.latitude, position.coords.longitude]),
+        (err) => console.error("Error getting user location:", err)
+      );
+    }
+  }, []);
+
 
   // Fetch routes from Mapbox Directions API
   useEffect(() => {
@@ -57,6 +85,25 @@ const MapView = () => {
 
     fetchRoutes();
   }, [foodbankPosition]);
+
+  // --- FETCH USER ROUTE ---
+  useEffect(() => {
+    const fetchUserRoute = async () => {
+      if (!userPosition) return;
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${userPosition[1]},${userPosition[0]};${foodbankPosition[1]},${foodbankPosition[0]}?geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.routes?.length > 0) {
+          const coords = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+          setUserRoute(coords);
+        }
+      } catch (err) {
+        console.error("Error fetching user route:", err);
+      }
+    };
+    fetchUserRoute();
+  }, [userPosition, foodbankPosition]);
 
   return (
     <MapContainer center={foodbankPosition} zoom={13} style={{ height: "100vh", width: "100%" }}>
@@ -88,10 +135,34 @@ const MapView = () => {
         </Marker>
       ))}
 
+      {/* User Marker */}
+      {userPosition && (
+        <Marker position={userPosition} icon={userIcon}>
+          <Tooltip permanent direction="top" offset={[0, -25]} className="tooltip-sm">
+            You
+          </Tooltip>
+          <Popup>Your location</Popup>
+        </Marker>
+      )}
+
+      {/* User Route */}
+      {userRoute.length > 0 && (
+        <Polyline
+          positions={userRoute}
+          color="#FF00FF"
+          weight={5}
+          dashArray="8, 6"
+        />
+      )}
+
+
+
       {/* Polylines for Routes */}
-      {routes.map((coords, idx) => (
-        <Polyline key={idx} positions={coords} color="#00FFFF" weight={3} />
-      ))}
+      {routes.map((coords, idx) => {
+        const dropbox = dropboxesData[idx];
+        const color = priorityColors[dropbox.priority] || "#00FFFF"; // default cyan
+        return <Polyline key={idx} positions={coords} color={color} weight={5} />;
+      })}
     </MapContainer>
   );
 };
