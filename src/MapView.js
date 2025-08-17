@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -71,6 +71,9 @@ const MapView = () => {
       {/* Foodbank Marker */}
       {foodbankData.length > 0 && (
         <Marker position={foodbankPosition} icon={foodbankIcon}>
+          <Tooltip permanent direction="top" offset={[0, -25]} className="tooltip-sm">
+            {foodbankData[0].name}
+          </Tooltip>
           <Popup>{foodbankData[0].name || "Foodbank"}</Popup>
         </Marker>
       )}
@@ -78,6 +81,9 @@ const MapView = () => {
       {/* Dropboxes Markers */}
       {dropboxesData.map((d, idx) => (
         <Marker key={idx} position={[d.latitude, d.longitude]} icon={dropboxIcon}>
+          <Tooltip permanent direction="top" offset={[0, -25]} className="tooltip-sm">
+            {d.name}
+          </Tooltip>
           <Popup>{d.name || `Dropbox ${idx + 1}`}</Popup>
         </Marker>
       ))}
