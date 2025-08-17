@@ -37,9 +37,7 @@
   }
 }
 
-
-/* example */
 .leaflet-tooltip.tooltip-sm {
-  font-size: 0.75rem; /* smaller text */
-  padding: 2px 4px;  /* smaller box */
+  font-size: 0.75rem; 
+  padding: 2px 4px;  
 }

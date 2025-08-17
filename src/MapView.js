@@ -11,11 +11,12 @@ import foodbankData from "./foodbank.json";
 import dropboxesData from "./dropboxes.json";
 
 // --- ICON SETUP ---
+// Define custom icons for markers on the map
 const foodbankIcon = L.icon({
   iconUrl: foodbankIconImg,
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
+  iconSize: [32, 32],         //This is the size of the icon
+  iconAnchor: [16, 32],       //This is the point of the icon that corresponds to the markers location
+  popupAnchor: [0, -32],      //This is the position of the pop up relative to the icon
 });
 
 const dropboxIcon = L.icon({
@@ -32,26 +33,32 @@ const userIcon = L.icon({
   popupAnchor: [0, -32],
 });
 
+//define the color of the routes based on priority(low, medium, high)
 const priorityColors = {
-  1: "#00FFFF", // low
-  2: "#FFD700", // medium
-  3: "#FF0000"  // high
+  1: "#00FFFF", // low priority color
+  2: "#FFD700", // medium priority color
+  3: "#FF0000"  // high priority color
 };
 
 
 const MAPBOX_TOKEN = "pk.eyJ1IjoibWNpbGE3NzQiLCJhIjoiY21lZGxlcGd5MDgwODJqbXNxbzJ3MmZwaiJ9.RLjL-6U0jlIEdcOZhrv5pg";
 
 const MapView = () => {
+  //gte the position of the foodbank
   const foodbankPosition =
     foodbankData && foodbankData.length > 0
       ? [foodbankData[0].latitude, foodbankData[0].longitude]
       : [-45.874, 170.503]; // fallback
 
+  //state to store routes to dropboxes
   const [routes, setRoutes] = useState([]);
+  //state to store the current users location
   const [userPosition, setUserPosition] = useState(null);
+  //state to store the route from user to foodbank 
   const [userRoute, setUserRoute] = useState([]);
 
   // --- GET USER LOCATION ---
+  //use the browsers geolocation API to get the user current location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -62,7 +69,8 @@ const MapView = () => {
   }, []);
 
 
-  // Fetch routes from Mapbox Directions API
+  // --- FETCH ROUTES TO DROPBOXES ---
+  //Use Mapbox Directions API to fetch driving routes from foodbank to each dropbox
   useEffect(() => {
     const fetchRoutes = async () => {
       const newRoutes = [];
@@ -87,6 +95,7 @@ const MapView = () => {
   }, [foodbankPosition]);
 
   // --- FETCH USER ROUTE ---
+  //Fetch route from users locaiton to the foodbank using Mapbox Directions API
   useEffect(() => {
     const fetchUserRoute = async () => {
       if (!userPosition) return;
